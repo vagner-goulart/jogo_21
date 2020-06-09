@@ -20,13 +20,11 @@ fichas_obtidas = 0
 
 
 def resetar_variaveis():
-    global cartas_usuario, cartas_dealer, soma_final_usuario, soma_final_dealer, resultado_final, fichas_obtidas
+    global cartas_usuario, cartas_dealer, resultado_final, fichas_obtidas
 
     cartas_usuario = []
     cartas_dealer = []
 
-    soma_final_usuario = 0
-    soma_final_dealer = 0
     resultado_final = ""
     fichas_obtidas = 0
 
@@ -48,6 +46,32 @@ def printar_cartas(cartas_p_printar):
         print(f"({soma_final_usuario})")
     elif cartas_p_printar == cartas_dealer:
         print(f"({soma_final_dealer})")
+
+
+def logica_somar_cartas(cartas_p_somar, soma_final):
+
+    global soma_final_usuario
+
+    for carta in cartas_p_somar:
+
+        if carta == "J" or carta == "Q" or carta == "K":
+            soma_final += 10
+
+        if isinstance(carta, int):
+            soma_final += carta
+
+    for carta in cartas_p_somar:
+        if carta == "A":
+
+            if 1 + soma_final > 21:
+                soma_final += 1
+            else:
+                if 11 + soma_final <= 21:
+                    soma_final += 11
+                elif 1 + soma_final <= 21:
+                    soma_final += 1
+
+    return soma_final
 
 
 print("Este eh um jogo de Blackjack!\n")
@@ -99,24 +123,7 @@ while True:
         if "A" in cartas_dealer and dealer_tem_Q_J_or_K:
             break
 
-        for carta in cartas_usuario:
-
-            if carta == "J" or carta == "Q" or carta == "K":
-                soma_final_usuario += 10
-
-            if isinstance(carta, int):
-                soma_final_usuario += carta
-
-        for carta in cartas_usuario:
-            if carta == "A":
-
-                if 1 + soma_final_usuario > 21:
-                    soma_final_usuario += 1
-                else:
-                    if 11 + soma_final_usuario <= 21:
-                        soma_final_usuario += 11
-                    elif 1 + soma_final_usuario <= 21:
-                        soma_final_usuario += 1
+        soma_final_usuario = logica_somar_cartas(cartas_usuario, soma_final_usuario)
 
         printar_cartas(cartas_usuario)
         print()
@@ -155,24 +162,7 @@ while True:
 
             soma_final_dealer = 0
 
-            for carta in cartas_dealer:
-
-                if carta == "J" or carta == "Q" or carta == "K":
-                    soma_final_dealer += 10
-
-                if isinstance(carta, int):
-                    soma_final_dealer += carta
-
-            for carta in cartas_dealer:
-                if carta == "A":
-
-                    if 1 + soma_final_dealer > 21:
-                        soma_final_dealer += 1
-                    else:
-                        if 11 + soma_final_dealer <= 21:
-                            soma_final_dealer += 11
-                        elif 1 + soma_final_dealer <= 21:
-                            soma_final_dealer += 1
+            soma_final_dealer = logica_somar_cartas(cartas_dealer, soma_final_dealer)
 
             printar_cartas(cartas_dealer)
             sleep(1.5)
@@ -248,5 +238,3 @@ while True:
     if quant_fichas_usuario <= 0:
         print("Suas fichas acabaram, Fim de jogo.")
         break
-
-    # resolver: se o dealer pega um 21 direto, o programa tem q dar break sem passar pelo usuario
