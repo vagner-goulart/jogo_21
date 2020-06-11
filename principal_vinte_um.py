@@ -16,17 +16,21 @@ baralho_p_jogo.pop(0)
 resultado_final = ""
 
 quant_fichas_usuario = 50
+fichas_apostadas = 0
 fichas_obtidas = 0
 
 
-def resetar_variaveis():
-    global cartas_usuario, cartas_dealer, resultado_final, fichas_obtidas
-
-    cartas_usuario = []
-    cartas_dealer = []
-
-    resultado_final = ""
-    fichas_obtidas = 0
+# TODO: colocar isso no final das funcoes
+# def resetar_variaveis():
+#     global cartas_usuario, cartas_dealer, resultado_final, fichas_obtidas, soma_final_dealer
+#
+#     cartas_usuario = []
+#     cartas_dealer = []
+#
+#     resultado_final = ""
+#     fichas_obtidas = 0
+#
+#     soma_final_dealer = 0
 
 
 def printar_cartas(cartas_p_printar):
@@ -48,10 +52,28 @@ def printar_cartas(cartas_p_printar):
         print(f"({soma_final_dealer})")
 
 
+def apostar_fichas():
+    while True:
+
+        print(f"Você tem {quant_fichas_usuario} fichas")
+        input_aposta_fichas = input("Quanto quer apostar? : ")
+
+        if input_aposta_fichas.isdigit():
+
+            if int(input_aposta_fichas) > quant_fichas_usuario:
+                print(f"\nVocê não tem {int(input_aposta_fichas)} fichas para apostar!\n")
+
+            elif int(input_aposta_fichas) <= 0:
+                print("\nDigite um numero vahlido!\n")
+
+            else:
+                return int(input_aposta_fichas)
+
+        else:
+            print("\nDigite apenas numeros!\n")
+
+
 def logica_somar_cartas(cartas_p_somar, soma_final):
-
-    global soma_final_usuario
-
     for carta in cartas_p_somar:
 
         if carta == "J" or carta == "Q" or carta == "K":
@@ -74,6 +96,52 @@ def logica_somar_cartas(cartas_p_somar, soma_final):
     return soma_final
 
 
+def definir_mensagem_resultado():
+    if soma_final_usuario < 21 and soma_final_dealer < 21:
+        print(f"\nResultado User: {soma_final_usuario}\n")
+        print(f"Resultado Dealer: {soma_final_dealer}\n")
+
+    elif soma_final_usuario > 21 or soma_final_dealer > 21:
+        print("Passou 21")
+
+    if soma_final_dealer > 21:
+        print("teste1")
+        return "User ganhou"
+
+    elif soma_final_usuario > 21:
+        return "Dealer ganhou"
+
+    else:
+        if soma_final_dealer > soma_final_usuario or soma_final_usuario > 21:
+            return "Dealer ganhou"
+
+        elif soma_final_dealer < soma_final_usuario or soma_final_dealer > 21:
+            print("teste2")
+            return "User ganhou"
+
+        elif soma_final_dealer == soma_final_usuario:
+            return "Empate"
+
+
+def calcular_fichas_obtidas(fichas_apostadas_parametro):
+    guardar_fichas = 0
+
+    if "Dealer" in resultado_final:
+        return 0 - fichas_apostadas_parametro
+
+    elif "User" in resultado_final:
+        guardar_fichas += fichas_apostadas_parametro
+
+        if len(cartas_usuario) == 2 and soma_final_usuario == 21:
+            print("\nBLACKJACK!\n")
+            guardar_fichas += math.floor(fichas_apostadas_parametro * 1.5)
+
+        return guardar_fichas
+
+    elif "Empate" in resultado_final:
+        return 0
+
+
 print("Este eh um jogo de Blackjack!\n")
 print("Voce recebeu 50 fichas")
 
@@ -88,28 +156,7 @@ while True:
 
         cartas_usuario.append(baralho_p_jogo.pop(0))
 
-    # mover isso pra cima dps
-    fichas_apostadas = 0
-
-    while True:
-
-        print(f"Você tem {quant_fichas_usuario} fichas")
-        input_aposta_fichas = input("Quanto quer apostar? : ")
-
-        if input_aposta_fichas.isdigit():
-
-            if int(input_aposta_fichas) > quant_fichas_usuario:
-                print(f"\nVocê não tem {int(input_aposta_fichas)} fichas para apostar!\n")
-
-            elif int(input_aposta_fichas) <= 0:
-                print("\nDigite um numero vahlido!\n")
-
-            else:
-                fichas_apostadas = int(input_aposta_fichas)
-                break
-
-        else:
-            print("\nDigite apenas numeros!\n")
+    fichas_apostadas = apostar_fichas()
 
     print(f"\n\nCartas do dealer: {cartas_dealer[0]} | #\n")
 
@@ -153,7 +200,6 @@ while True:
             print()
             break
 
-    # agr, fazer aqui o bag pra somar as cartas do dealer
     if soma_final_usuario <= 21:
 
         print("\nDealer jogando:\n")
@@ -182,44 +228,9 @@ while True:
                 # print("menos q usuario")
                 cartas_dealer.append(baralho_p_jogo.pop(0))
 
-    if soma_final_usuario < 21 and soma_final_dealer < 21:
-        print(f"\nResultado User: {soma_final_usuario}\n")
-        print(f"Resultado Dealer: {soma_final_dealer}\n")
+    resultado_final = definir_mensagem_resultado()
 
-    elif soma_final_usuario > 21 or soma_final_dealer > 21:
-        print("Passou 21")
-
-    if soma_final_dealer > 21:
-        resultado_final = "User ganhou"
-
-    elif soma_final_usuario > 21:
-        resultado_final = "Dealer ganhou"
-
-    else:
-        if soma_final_dealer > soma_final_usuario or soma_final_usuario > 21:
-            resultado_final = "Dealer ganhou"
-
-        elif soma_final_dealer < soma_final_usuario or soma_final_dealer > 21:
-            resultado_final = "User ganhou"
-
-        elif soma_final_dealer == soma_final_usuario:
-            resultado_final = "Empate"
-
-    if "Dealer" in resultado_final:
-        fichas_obtidas -= fichas_apostadas
-        fichas_apostadas = 0
-
-    if "User" in resultado_final:
-        fichas_obtidas += fichas_apostadas
-
-        if len(cartas_usuario) == 2 and soma_final_usuario == 21:
-            print("\nBLACKJACK!\n")
-            fichas_obtidas += math.floor(fichas_apostadas * 1.5)
-
-        fichas_apostadas = 0
-
-    if "Empate" in resultado_final:
-        fichas_apostadas = 0
+    fichas_obtidas = calcular_fichas_obtidas(fichas_apostadas)
 
     quant_fichas_usuario += fichas_obtidas
 
@@ -230,7 +241,14 @@ while True:
         random.shuffle(baralho_p_jogo)
         baralho_p_jogo.pop(0)
 
-    resetar_variaveis()
+    # resetar_variaveis()
+
+    cartas_usuario = []
+    cartas_dealer = []
+    resultado_final = ""
+    fichas_obtidas = 0
+    soma_final_dealer = 0
+    fichas_apostadas = 0
 
     print("¨" * 30)
     print()
