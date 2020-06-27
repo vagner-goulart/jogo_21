@@ -19,23 +19,9 @@ resultado_final = ""
 
 quant_fichas_usuario = 50
 fichas_apostadas = 0
-fichas_apostadas_dividir = 0
 fichas_obtidas = 0
 dividiu_par = False
 run_uma_vez = True
-
-
-# TODO: rever se vou usar usar isso
-# def resetar_variaveis():
-#     global cartas_usuario, cartas_dealer, resultado_final, fichas_obtidas, soma_final_dealer
-#
-#     cartas_usuario = []
-#     cartas_dealer = []
-#
-#     resultado_final = ""
-#     fichas_obtidas = 0
-#
-#     soma_final_dealer = 0
 
 
 def printar_cartas(cartas_p_printar):
@@ -111,6 +97,63 @@ def logica_somar_cartas(cartas_p_somar):
     return soma_final
 
 
+def dividir_par():
+    print("\nJogo 2:\n")
+
+    global soma_final_user_dividir
+
+    while True:
+
+        if dividiu_par and len(cartas_usuario) == cartas_usuario.count("A"):
+
+            printar_cartas(cartas_user_dividir)
+            cartas_user_dividir.append(baralho_p_jogo.pop(0))
+            soma_final_user_dividir = logica_somar_cartas(cartas_user_dividir)
+            printar_cartas(cartas_user_dividir)
+            print()
+            break
+
+        soma_final_user_dividir = logica_somar_cartas(cartas_user_dividir)
+
+        printar_cartas(cartas_user_dividir)
+        print()
+
+        if soma_final_user_dividir >= 21:
+            print(f"Deu: {soma_final_user_dividir}")
+            break
+
+        while True:
+
+            input_usuario_dividir = input("\n(1)-Carta (2)-Ficar : ")
+
+            if input_usuario_dividir == "1" or input_usuario_dividir == "2":
+                break
+
+            else:
+                print("\nDigite um dos valores abaixo!")
+
+        print()
+
+        if input_usuario_dividir == "1":
+            cartas_user_dividir.append(baralho_p_jogo.pop(0))
+
+        elif input_usuario_dividir == "2":
+            printar_cartas(cartas_user_dividir)
+            print()
+            break
+
+
+def dobrar_aposta():
+
+    if fichas_apostadas * 2 > quant_fichas_usuario:
+        print(f"Você não tem {fichas_apostadas} fichas sobrando para dobrar a aposta!\n")
+        return fichas_apostadas, False
+    else:
+        cartas_usuario.append(baralho_p_jogo.pop(0))
+        print()
+        return fichas_apostadas * 2, True
+
+
 def definir_mensagem_resultado(soma_final):
     if soma_final < 21 and soma_final_dealer < 21:
         print(f"\nResultado User: {soma_final}")
@@ -156,66 +199,6 @@ def calcular_fichas_obtidas(fichas_apostadas_parametro):
         return 0
 
 
-# TODO: rever a posicao dessa funcao depois
-def dividir_par():
-    print("\nJogo 2:\n")
-
-    global soma_final_user_dividir
-
-    while True:
-        soma_final_user_dividir = 0
-
-        if dividiu_par and "A" in cartas_user_dividir:
-
-            printar_cartas(cartas_user_dividir)
-            cartas_user_dividir.append(baralho_p_jogo.pop(0))
-            soma_final_user_dividir = logica_somar_cartas(cartas_user_dividir)
-            printar_cartas(cartas_user_dividir)
-            print()
-            break
-
-        soma_final_user_dividir = logica_somar_cartas(cartas_user_dividir)
-
-        printar_cartas(cartas_user_dividir)
-        print()
-
-        if soma_final_user_dividir >= 21:
-            print(f"Deu: {soma_final_user_dividir}")
-            break
-
-        while True:
-
-            input_usuario_dividir = input("\n(1)-Carta (2)-Ficar : ")
-
-            if input_usuario_dividir == "1" or input_usuario_dividir == "2":
-                break
-
-            else:
-                print("\nDigite um dos valores abaixo!")
-
-        print()
-
-        if input_usuario_dividir == "1":
-            cartas_user_dividir.append(baralho_p_jogo.pop(0))
-
-        elif input_usuario_dividir == "2":
-            printar_cartas(cartas_user_dividir)
-            print()
-            break
-
-
-# TODO: rever a posicao dessa funcao depois
-def dobrar_aposta():
-
-    if fichas_apostadas * 2 > quant_fichas_usuario:
-        print(f"Você não tem {fichas_apostadas} fichas sobrando para dobrar a aposta!\n")
-        return fichas_apostadas, False
-    else:
-        cartas_usuario.append(baralho_p_jogo.pop(0))
-        print()
-        return fichas_apostadas * 2, True
-
-
 print("Este eh um jogo de Blackjack!\n")
 print("Voce recebeu 50 fichas")
 
@@ -231,9 +214,9 @@ while True:
         cartas_usuario.append(baralho_p_jogo.pop(0))
 
     # TODO: remover esse while depois. isso ta aqui pra testar dividir_par
-    # while len(set(cartas_usuario)) != 1:
-    #     cartas_usuario.pop(0)
-    #     cartas_usuario.append(baralho_p_jogo.pop(0))
+    while len(set(cartas_usuario)) != 1:
+        cartas_usuario.pop(0)
+        cartas_usuario.append(baralho_p_jogo.pop(0))
 
     fichas_apostadas = apostar_fichas()
 
@@ -312,7 +295,6 @@ while True:
 
     if len(cartas_user_dividir) == 1:
         dividir_par()
-        fichas_apostadas_dividir = fichas_apostadas + 0
 
     if soma_final_usuario <= 21 or dividiu_par and soma_final_user_dividir <= 21:
 
@@ -363,6 +345,7 @@ while True:
 
     print("\n\nResultado(s):")
 
+    # TODO: rever isso, pra mim nao ta bonito
     if len(cartas_user_dividir) >= 1:
 
         print("\nJogo 1:")
@@ -393,27 +376,21 @@ while True:
 
         print(f"{resultado_final}  | {'+' if fichas_obtidas > 0 else ''}{fichas_obtidas} ficha(s)")
 
-    if len(baralho_p_jogo) < 78:
-        baralho_p_jogo = um_baralho * 6
-        random.shuffle(baralho_p_jogo)
-        baralho_p_jogo.pop(0)
-
-    # resetar_variaveis()
-
-    cartas_usuario = []
-    cartas_user_dividir = []
-    cartas_dealer = []
-    resultado_final = ""
-    fichas_obtidas = 0
-    soma_final_dealer = 0
-    soma_final_usuario = 0
-    fichas_apostadas = 0
-    run_uma_vez = True
-    dividiu_par = False
-
     print("¨" * 30)
     print()
 
     if quant_fichas_usuario <= 0:
         print("Suas fichas acabaram, Fim de jogo.")
         break
+
+    if len(baralho_p_jogo) < 78:
+        baralho_p_jogo = um_baralho * 6
+        random.shuffle(baralho_p_jogo)
+        baralho_p_jogo.pop(0)
+
+    resultado_final = ""
+    cartas_user_dividir, cartas_usuario, cartas_dealer = [], [], []
+    soma_final_dealer, soma_final_usuario = 0, 0
+    fichas_apostadas, fichas_obtidas = 0, 0
+    run_uma_vez = True
+    dividiu_par = False
