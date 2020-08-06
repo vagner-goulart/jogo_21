@@ -195,7 +195,7 @@ def calc_obtained_tokens(user_bet_param):
 
         return store_tokens
 
-    elif "Empate" in final_result:
+    elif "Draw" in final_result:
         return 0
 
 
