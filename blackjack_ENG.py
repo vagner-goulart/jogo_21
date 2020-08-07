@@ -238,7 +238,8 @@ while True:
             print(f"Hand sum: {user_final_sum}")
             break
 
-        allowed_inputs = ["1", "2", "3", "4"] if not boll_splitted_pair else ["1", "2"]
+        standart_inputs = ["1", "2", "3", "4"] if len(set(user_cards)) == 1 else ["1", "2","3"]
+        allowed_inputs = standart_inputs if not boll_splitted_pair else ["1", "2"]
         user_input_msg = "\n(1)-Hit me (2)-Stand (3)-Double down : "
 
         if run_once and len(set(user_cards)) == 1:
